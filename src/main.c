@@ -10,7 +10,7 @@
 config_t parse (int argc, char **argv)
 {
     int c;
-    config_t config = { 20, 10, 1000, 1000 };
+    config_t config = { 10, 5, 1000, 1000 };
 
     while ((c = getopt(argc, argv, "v:c:p:e:h")) != -1) {
         switch (c) {
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
     srand(time(NULL));
 
     /* Inicializa o chieftain. */    
-    chieftain_init(&chieftain);
+    chieftain_init(&chieftain, &valhalla);
     
     /* Inicializa valhalla. */
     valhalla_init(&valhalla);

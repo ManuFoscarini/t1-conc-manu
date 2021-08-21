@@ -15,7 +15,9 @@
      */
     typedef struct chieftain
     {
-        int initialized;
+        valhalla_t *valhalla;   /* Referência para valhalla.  */
+
+        int *chairsList;
         
         /* TODO: Adicione aqui os atributos que achar necessários para implementar o
         comportamento do chieftain. Esses atributos deverão ser usados pelas funções
@@ -33,7 +35,7 @@
      * 
      * @param self O chieftain.
      */
-    extern void chieftain_init(chieftain_t *self);
+     extern void chieftain_init(chieftain_t *self, valhalla_t *valhalla);
     
     /**
      * @brief Finaliza o chieftain (o chefe da horda).

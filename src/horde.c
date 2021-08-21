@@ -38,11 +38,17 @@ void horde_spawn_viking(horde_t *self, int berserker, int type)
     if (berserker)
         self->berserkers++;    
     
+    if (type == NORMAL_VIKING) {
+        viking_eat(&self->vikings[viking_id]);
+    }
+
+
     plog("[horde] Viking %d created (berserker=%d, type=%d)!\n", viking_id, berserker, type);
 }
 
 void horde_join(horde_t *self)
 {
+
     /* TODO: Adicionar código aqui se necessário! */
 
     for (int i = 0; i < self->normal_vikings + self->late_vikings; i++)
