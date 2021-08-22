@@ -12,7 +12,7 @@ void chieftain_init(chieftain_t *self, valhalla_t *valhalla)
 
     self->valhalla = valhalla;
 
-    for (int i = 0; i <= config.table_size; i++)
+    for (int i = 0; i < config.table_size; i++)
     {
         self->chairsList[i] = 3; // inicialmente, todas as cadeiras são lugares vazios com um prato (3)
         // OBS: Cadeiras vazias sem prato podem ser elementos com o número 4 ou 5 (dependendo em qual sentido seu pratos foram pegos pelos vinkings)
@@ -26,7 +26,7 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
     int vikingChair = 0;                    // OBS: -1 para o viking chair fará o programa dar ruim caso a variável mantenha esse valor após passar pela lógica abaixo (o que não deve ocorrer)
     int vikingType = berserker + 1;          // o tipo do meu viking: 2 para berserker e 1 para um viking comum
     int otherVikingType = berserker ? 1 : 2; // o tipo do viking que não é o mesmo que o meu: se eu for berserker, o outro tipo é 1, caso eu não seja, então o outro tipo é berserker (2)
-    int table_max_index = config.table_size;
+    int table_max_index = config.table_size - 1;
 
 
     if (self->chairsList[0] == 3) // a primeira posição está vazia e com um prato?
@@ -98,7 +98,7 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
 
 void chieftain_release_seat_plates(chieftain_t *self, int pos)
 {
-    int table_max_index = config.table_size;
+    int table_max_index = config.table_size - 1;
 
     if (pos > 0 && pos < table_max_index) // para garantir que não tentemos acessar os indexes "0 - 1" e "table_max_index + 1"
     {
@@ -133,8 +133,8 @@ void chieftain_release_seat_plates(chieftain_t *self, int pos)
             self->chairsList[0] = 3;
         }
     }
-    printf("POSIÇÃO POS %d", pos);
-    printf("TABLE SIZE %d", config.table_size);
+    printf("POSIÇÃO POS %d \n", pos);
+    printf("TABLE SIZE %d \n", config.table_size);
     self->chairsList[pos] = 3;
 
 }
