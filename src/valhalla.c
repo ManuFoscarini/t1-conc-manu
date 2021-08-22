@@ -7,13 +7,18 @@
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+pthread_mutex_t count_prayer;
+
 void valhalla_init(valhalla_t *self)
 {
     /* Inicializa os contadores de preces. */
-    for (int i = 0; i < NUMBER_OF_GODS; i++)
+    for (int i = 0; i < NUMBER_OF_GODS; i++) {
         self->prayers[i] = 0;
-
+    }
     /* TODO: Adicionar código aqui se necessário! */
+
+    pthread_mutex_init(&count_prayer, NULL);
+
 
     plog("[valhalla] Initialized\n");
 }
@@ -30,7 +35,10 @@ void valhalla_pray(valhalla_t *self, god_t god)
     /* TODO: Adicionar código se necessário! */
 
     /* Atualiza o número de preces do deus god. */
+
+    pthread_mutex_lock(&count_prayer);
     self->prayers[god]++;
+    pthread_mutex_unlock(&count_prayer);
 
     /* Realiza a prece por um tempo determinado (NÃO ALTERE!). */
     msleep(rand() % config.max_pray_time);

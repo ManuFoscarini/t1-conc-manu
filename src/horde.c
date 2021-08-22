@@ -36,12 +36,7 @@ void horde_spawn_viking(horde_t *self, int berserker, int type)
     /* Atualiza o número de vikings e berserkers. */
     (type == NORMAL_VIKING) ? self->normal_vikings++ : self->late_vikings++;
     if (berserker)
-        self->berserkers++;    
-    
-    if (type == NORMAL_VIKING) {
-        viking_eat(&self->vikings[viking_id]);
-    }
-
+        self->berserkers++;
 
     plog("[horde] Viking %d created (berserker=%d, type=%d)!\n", viking_id, berserker, type);
 }

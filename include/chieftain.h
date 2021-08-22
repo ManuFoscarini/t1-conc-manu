@@ -18,6 +18,10 @@
         valhalla_t *valhalla;   /* Referência para valhalla.  */
 
         int *chairsList;
+
+        int table_max_index;
+
+        int counter; //contador de vikins saindo da mesa
         
         /* TODO: Adicione aqui os atributos que achar necessários para implementar o
         comportamento do chieftain. Esses atributos deverão ser usados pelas funções
