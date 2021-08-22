@@ -8,7 +8,7 @@ sem_t sem_r_table, sem_a_table;
 
 void chieftain_init(chieftain_t *self, valhalla_t *valhalla)
 {
-    self->chairsList = (int *)malloc(sizeof(int) * (config.table_size + 1));
+    self->chairsList = (int *)malloc(sizeof(int) * (config.table_size));
 
     self->valhalla = valhalla;
 
@@ -23,7 +23,7 @@ void chieftain_init(chieftain_t *self, valhalla_t *valhalla)
 
 int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
 {
-    int vikingChair = -1;                    // OBS: -1 para o viking chair fará o programa dar ruim caso a variável mantenha esse valor após passar pela lógica abaixo (o que não deve ocorrer)
+    int vikingChair = 0;                    // OBS: -1 para o viking chair fará o programa dar ruim caso a variável mantenha esse valor após passar pela lógica abaixo (o que não deve ocorrer)
     int vikingType = berserker + 1;          // o tipo do meu viking: 2 para berserker e 1 para um viking comum
     int otherVikingType = berserker ? 1 : 2; // o tipo do viking que não é o mesmo que o meu: se eu for berserker, o outro tipo é 1, caso eu não seja, então o outro tipo é berserker (2)
     int table_max_index = config.table_size;
@@ -135,7 +135,7 @@ void chieftain_release_seat_plates(chieftain_t *self, int pos)
     }
     printf("POSIÇÃO POS %d", pos);
     printf("TABLE SIZE %d", config.table_size);
-    self->chairsList[pos] = 0;
+    self->chairsList[pos] = 3;
 
 }
 
