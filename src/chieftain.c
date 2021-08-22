@@ -10,10 +10,6 @@ void chieftain_init(chieftain_t *self, valhalla_t *valhalla)
 {
     self->chairsList = (int *)malloc(sizeof(int) * (config.table_size + 1));
 
-    sem_init(&sem_r_table, 0, config.table_size + 1);
-
-    sem_init(&sem_a_table, 0, config.table_size + 1);
-
     self->valhalla = valhalla;
 
     for (int i = 0; i <= config.table_size; i++)
@@ -32,7 +28,6 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
     int otherVikingType = berserker ? 1 : 2; // o tipo do viking que não é o mesmo que o meu: se eu for berserker, o outro tipo é 1, caso eu não seja, então o outro tipo é berserker (2)
     int table_max_index = config.table_size;
 
-    sem_wait(&sem_a_table);
 
     if (self->chairsList[0] == 3) // a primeira posição está vazia e com um prato?
     {
@@ -42,7 +37,6 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
             vikingChair = 0;
             self->chairsList[0] = vikingType; // a primeira posição fica ocupada "comigo"
             self->chairsList[1] = 5;          // a segunda posição (da qual eu peguei meu segundo prato) é colocada como uma cadeira vazia sem prato [com um número para indicar quem pegou o prato dela (algúem em sentido horário = 5)]
-            sem_post(&sem_a_table);
             return vikingChair;
         }
         // caso a próxima cadeira não esteja vazia E COM UM PRATO.
@@ -51,7 +45,6 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
             vikingChair = 0;
             self->chairsList[0] = vikingType;      // a primeira posição fica ocupada "comigo"
             self->chairsList[table_max_index] = 4; // a última posição é colocada como uma cadeira vazia sem prato [com um número para indicar quem pegou o prato dela (algúem em sentido anti-horário = 4)]
-            sem_post(&sem_a_table);
             return vikingChair;
         }
     }
@@ -66,7 +59,6 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
                 vikingChair = i;
                 self->chairsList[i] = vikingType; // a posicão i fica ocupada "comigo"
                 self->chairsList[i + 1] = 5;      // a cadeira depois da que eu estou (da qual eu peguei meu segundo prato) é colocada como uma cadeira vazia sem prato [com um número para indicar quem pegou o prato dela (algúem em sentido horário = 5)]
-                sem_post(&sem_a_table);
                 return vikingChair;
             }
             // caso a cadeira i+1 não esteja vazia E COM UM PRATO.
@@ -75,7 +67,6 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
                 vikingChair = i;
                 self->chairsList[i] = vikingType; // a posicão i fica ocupada "comigo"
                 self->chairsList[i - 1] = 4;      // a cadeira antes da que eu estou (da qual eu peguei meu segundo prato) é colocada como uma cadeira vazia sem prato [com um número para indicar quem pegou o prato dela (algúem em sentido anti-horário = 4)]
-                sem_post(&sem_a_table);
                 return vikingChair;
             }
         }
@@ -90,7 +81,6 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
             vikingChair = table_max_index;
             self->chairsList[table_max_index] = vikingType; // a última posição fica ocupada "comigo"
             self->chairsList[table_max_index - 1] = 4;      // a penúltima posição (da qual eu peguei meu segundo prato) é colocada como uma cadeira vazia sem prato [com um número para indicar quem pegou o prato dela (algúem em sentido anti-horário = 4)]
-            sem_post(&sem_a_table);
             return vikingChair;
         }
         // caso a penúltima cadeira não esteja vazia E COM UM PRATO.
@@ -99,54 +89,54 @@ int chieftain_acquire_seat_plates(chieftain_t *self, int berserker)
             vikingChair = table_max_index;
             self->chairsList[table_max_index] = vikingType; // a última posição fica ocupada "comigo"
             self->chairsList[0] = 5;                        // a primeira posição (da qual eu peguei meu segundo prato) é colocada como uma cadeira vazia sem prato [com um número para indicar quem pegou o prato dela (algúem em sentido horário = 5)]
-            sem_post(&sem_a_table);
             return vikingChair;
         }
     }
 
-    sem_post(&sem_a_table);
     return vikingChair;
 }
 
 void chieftain_release_seat_plates(chieftain_t *self, int pos)
 {
     int table_max_index = config.table_size;
-    sem_wait(&sem_r_table);
+
     if (pos > 0 && pos < table_max_index) // para garantir que não tentemos acessar os indexes "0 - 1" e "table_max_index + 1"
     {
         if (self->chairsList[pos - 1] == 4) // o index antes da minha posição teve o prato pego no sentido anti horário?
         {
-            self->chairsList[pos - 1] == 3; // então quer dizer que eu que peguei o prato dele e eu devolvo para aquela cadeira
+            self->chairsList[pos - 1] = 3; // então quer dizer que eu que peguei o prato dele e eu devolvo para aquela cadeira
         }
         else if (self->chairsList[pos + 1] == 5) // o index depois da minha posição teve o prato pego no sentido horário?
         {
-            self->chairsList[pos + 1] == 3; // então quer dizer que eu que peguei o prato dele e eu devolvo para aquela cadeira
+            self->chairsList[pos + 1] = 3; // então quer dizer que eu que peguei o prato dele e eu devolvo para aquela cadeira
         }
     }
     else if (pos == 0)
     {
         if (self->chairsList[table_max_index] == 4) // OBS: o index considerado anterior a posição 0 é o último
         {
-            self->chairsList[table_max_index] == 3;
+            self->chairsList[table_max_index] = 3;
         }
         else if (self->chairsList[1] == 5)
         {
-            self->chairsList[1] == 3;
+            self->chairsList[1] = 3;
         }
     }
     else
     {
         if (self->chairsList[table_max_index - 1] == 4)
         {
-            self->chairsList[table_max_index - 1] == 3;
+            self->chairsList[table_max_index - 1] = 3;
         }
         else if (self->chairsList[0] == 5) // OBS: o index considerado posterior a última posição é o index 0
         {
-            self->chairsList[0] == 3;
+            self->chairsList[0] = 3;
         }
     }
+    printf("POSIÇÃO POS %d", pos);
+    printf("TABLE SIZE %d", config.table_size);
     self->chairsList[pos] = 0;
-    sem_post(&sem_r_table);
+
 }
 
 god_t chieftain_get_god(chieftain_t *self)
